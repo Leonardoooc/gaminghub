@@ -11,14 +11,6 @@ use MarcReichel\IGDBLaravel\Enums\Image\Size;
 
 class MysqlTestController extends Controller
 {
-    public function sqltest(Request $request)
-    {
-        DB::insert('insert into socioeconomica (responsavel) values (?)', ['xd']);
-        $users = DB::select('select * from socioeconomica');
-
-        print_r($users);
-    }
-
     public function apiTest(Request $request) {
         $games = Game::select(['*'])->with(['cover'])->get();
         

@@ -28,4 +28,6 @@ Route::get('/registeruser', [GamingRegister::class, 'viewReg'])->name('gotoRegis
 
 Route::get('/game/{id}', [GamePage::class, 'viewGamePage'])->name('viewGamePage');
 
+Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearch');
+
 require __DIR__.'/auth.php';
