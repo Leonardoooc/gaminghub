@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use MarcReichel\IGDBLaravel\Models\Game;
 use MarcReichel\IGDBLaravel\Models\Genre;
 use MarcReichel\IGDBLaravel\Models\Company;
@@ -18,16 +20,25 @@ class GamePage extends Controller
             return view('gamepage', []); 
         }
 
+        $url = null;
+        if ($game->cover != null) {
+            $url = $game->cover->getUrl(Size::COVER_SMALL, true);
+        }
+
+        $isInDb = DB::table('game')->where('id', $id)->first();
+        if (!$isInDb) {
+            DB::table('game')->insert([
+                'id' => $id,
+                'name' => $game->name,
+                'coverUrl' => $url,
+            ]);
+        }
+
         $genreNames = [];
         $genres = $game->genres;
         foreach ($genres as $genreId) {
             $genreName = Genre::find($genreId);
             $genreNames[] = $genreName->name;
-        }
-
-        $url = null;
-        if ($game->cover != null) {
-            $url = $game->cover->getUrl(Size::COVER_SMALL, true);
         }
 
         $publishers = [];
@@ -53,7 +64,21 @@ class GamePage extends Controller
             }
         }
 
-        return view('gamepage', ['name' => $game->name, 'summary' => $game->summary, 'coverUrl' => $url, 'genres' => $genreNames, 'publishers' => $publishers, 'developers' => $developers, 'launchDate' => $launchDate]);
+        $query = "SELECT * FROM reviews WHERE gameid = $id ORDER BY likes desc";
+        $reviewsRequest = DB::select($query);
+
+        $reviews = [];
+        foreach ($reviewsRequest as $review) {
+            $reviewAuthor = DB::select("SELECT name FROM users WHERE id = $review->userid")[0];
+            
+            $reviews[] = [
+                'description' => $review->description,
+                'author' => $reviewAuthor->name,
+                'likes' => $review->likes,
+            ];
+        }
+
+        return view('gamepage', ['name' => $game->name, 'summary' => $game->summary, 'coverUrl' => $url, 'genres' => $genreNames, 'publishers' => $publishers, 'developers' => $developers, 'launchDate' => $launchDate, 'reviews' => $reviews]);
     }
 
     public function onSearchGameList(Request $request) {
