@@ -95,15 +95,54 @@ class GamePage extends Controller
             return $b['isReviewAuthor'] <=> $a['isReviewAuthor'];
         });
 
-        return view('gamepage', ['id' => $id, 'name' => $game->name, 'summary' => $game->summary, 'coverUrl' => $url, 'genres' => $genreNames, 'publishers' => $publishers, 'developers' => $developers, 'launchDate' => $launchDate, 'reviews' => $reviews, 'userHasReview' => $userHasReview]);
+        $userId = Auth::user()->id;
+        $hasRating = DB::select("SELECT * FROM scores WHERE userid = $userId and gameid = $id");
+        $currentRating = null;
+        if ($hasRating) {
+            $currentRating = $hasRating[0]->score;
+        }
+
+        $gameStats = DB::table('scores')->where('gameid', $id)->selectRaw('COUNT(*) as total_scores, AVG(score) as average_score')->first();
+
+        //$ranking = DB::table('scores')->selectRaw('gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank')->groupBy('gameid')->having('gameid', '=', $id)->first();
+        $ranking = DB::table(DB::raw('(SELECT gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank 
+                               FROM scores 
+                               GROUP BY gameid) as ranked_scores'))
+              ->where('gameid', '=', $id)
+              ->first();
+        $rank = null;
+        if ($ranking) {
+            $rank = $ranking->rank;
+        }
+
+        $popularity = DB::table('scores')->selectRaw('gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank')->groupBy('gameid')->having('gameid', '=', $id)->first();
+
+        return view('gamepage', ['id' => $id, 
+            'name' => $game->name, 
+            'summary' => $game->summary, 
+            'coverUrl' => $url, 
+            'genres' => $genreNames, 
+            'publishers' => $publishers, 
+            'developers' => $developers, 
+            'launchDate' => $launchDate, 
+            'reviews' => $reviews, 
+            'userHasReview' => $userHasReview, 
+            'currentRating' => $currentRating, 
+            'averageRating' => round($gameStats->average_score, 2),
+            'ratingCount' => $gameStats->total_scores,
+            'ranking' => $rank,
+        ]);
     }
 
     public function onSearchGameList(Request $request) {
         $name = $request->input('name');
 
-        $gamesFind = Game::search($name)->select(['id', 'name', 'cover'])->with(['cover'])->get();
-
         $games = [];
+        if (!$name || trim($name) === '') {
+            return redirect()->route('dashboard')->with('games', $games);
+        }
+
+        $gamesFind = Game::search($name)->select(['id', 'name', 'cover'])->with(['cover'])->get();
         foreach ($gamesFind as $game) {
             $coverUrl = isset($game->cover) ? $game->cover->url : null;
             $games[] = [
@@ -132,5 +171,28 @@ class GamePage extends Controller
         ]);
 
         return response()->json(['success' => 'Review enviado com sucesso!', 'id' => $id], 200);
+    }
+
+    public function onSendRating(Request $request) {
+        $rating = $request->input('rating');
+        $id = $request->input('gameId');
+        $userId = Auth::user()->id;
+
+        if (!$rating || $rating > 10 || $rating < 1) {
+            return response()->json(['error' => 'Erro, nota inválida.'], 400);
+        }
+
+        $currentRating = DB::select("SELECT * FROM scores WHERE userid = $userId and gameid = $id");
+        if ($currentRating) {
+            DB::table('scores')->where('userid', $userId)->where('gameid', $id)->update(['score' => $rating]);
+        } else {
+            DB::table('scores')->insert([
+                'userid' => $userId,
+                'gameid' => $id,
+                'score' => $rating,
+            ]);
+        }
+
+        return response()->json(['success' => 'Nota atualizada com sucesso.', 'id' => $id], 200);
     }
 }

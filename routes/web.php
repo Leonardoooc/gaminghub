@@ -30,5 +30,6 @@ Route::get('/game/{id}', [GamePage::class, 'viewGamePage'])->name('viewGamePage'
 
 Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearch');
 Route::post('/sendReview', [GamePage::class, 'onSendReview'])->name('sendReview');
+Route::post('/sendRating', [GamePage::class, 'onSendRating'])->name('sendRating');
 
 require __DIR__.'/auth.php';

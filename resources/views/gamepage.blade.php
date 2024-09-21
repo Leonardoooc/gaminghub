@@ -33,8 +33,51 @@
                             <!-- Detalhes do Jogo -->
                             <div class="md:w-3/4 md:ml-6">
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ $name }}</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-300 mb-4">Ranked #11 Popularidade: #2827</p>
-                                <p class="mb-4">{{ $summary }}</p>
+
+                                @php
+                                    $ratings = [
+                                        1 => 'Horrível',
+                                        2 => 'Muito ruim',
+                                        3 => 'Ruim',
+                                        4 => 'Mediocre',
+                                        5 => 'Razoável',
+                                        6 => 'Acima da média',
+                                        7 => 'Bom',
+                                        8 => 'Muito bom',
+                                        9 => 'Excelente',
+                                        10 => 'Obra Prima',
+                                    ];
+                                @endphp
+
+                                <div class="flex items-center mb-4">
+                                    <p class="text-lg text-gray-500 dark:text-gray-300">Sua nota:</p>
+                                    <select id="ratingDropdown" class="ml-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-48">
+                                        <option value="" disabled {{ $currentRating == null ? 'selected' : '' }}>Escolha uma nota</option>
+                                        @foreach($ratings as $ratingValue => $ratingDescription)
+                                            <option value="{{ $ratingValue }}" {{ $currentRating == $ratingValue ? 'selected' : '' }}>
+                                                {{ $ratingValue }} ({{ $ratingDescription }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <p id="ratingMessage" class="text-red-500 mt-2 text-sm" style="display:none;"></p>
+
+                                <!-- Seção destacada para a nota média -->
+                                <div class="flex justify-center mb-6">
+                                    <div class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-lg p-4 shadow-lg w-48 text-center">
+                                        <p class="text-lg font-bold">Nota Média</p>
+                                        <p class="text-5xl font-extrabold">{{ $averageRating }}</p>
+                                        <p class="text-xs font-extrabold">Usuários: {{ $ratingCount }}</p>
+                                        <br>
+                                        <p class="text-lg text-gray-500 dark:text-gray-300 mb-4">Ranking: #{{ $ranking !== null ? $ranking : 'N/A' }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Separação para informações adicionais -->
+                                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-6">
+                                    <p class="mb-4">{{ $summary }}</p>
+                                </div>
                             </div>
                         </div>
                     @else
@@ -130,6 +173,30 @@
                     }).catch(error => {
                         document.getElementById('message').textContent = 'Erro: ' + error.response.data.error;
                         document.getElementById('message').style.display = 'block';
+                    });
+                });
+            </script>
+
+            <script>
+                document.getElementById('ratingDropdown').addEventListener('change', function() {
+                    const selectedRating = this.value;
+                    const url = window.location.pathname;
+                    const gameId = url.substring(url.lastIndexOf('/') + 1);
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    axios.post('/sendRating', {
+                        gameId: gameId,
+                        rating: selectedRating
+                    }, {
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    }).then(response => {
+                        document.getElementById('ratingMessage').textContent = response.data.success;
+                        document.getElementById('ratingMessage').style.display = 'block';
+                    }).catch(error => {
+                        document.getElementById('ratingMessage').textContent = 'Erro: ' + error.response.data.error;
+                        document.getElementById('ratingMessage').style.display = 'block';
                     });
                 });
             </script>
