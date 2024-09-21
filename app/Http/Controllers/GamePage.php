@@ -36,24 +36,30 @@ class GamePage extends Controller
 
         $genreNames = [];
         $genres = $game->genres;
-        foreach ($genres as $genreId) {
-            $genreName = Genre::find($genreId);
-            $genreNames[] = $genreName->name;
+
+        if ($genres) {
+            foreach ($genres as $genreId) {
+                $genreName = Genre::find($genreId);
+                $genreNames[] = $genreName->name;
+            }
         }
 
         $publishers = [];
         $developers = [];
-        foreach ($game->involved_companies as $involved_company) {
-            if ($involved_company->company) {
-                $company = Company::find($involved_company->company);
-                if ($involved_company->publisher) {
-                    $publishers[] = $company->name;
-                }
 
-                if ($involved_company->developer) {
-                    $developers[] = $company->name;
-                }
+        if ($game->involved_companies) {
+            foreach ($game->involved_companies as $involved_company) {
+                if ($involved_company->company) {
+                    $company = Company::find($involved_company->company);
+                    if ($involved_company->publisher) {
+                        $publishers[] = $company->name;
+                    }
 
+                    if ($involved_company->developer) {
+                        $developers[] = $company->name;
+                    }
+
+                }
             }
         }
 
@@ -68,17 +74,28 @@ class GamePage extends Controller
         $reviewsRequest = DB::select($query);
 
         $reviews = [];
+        $userHasReview = false;
         foreach ($reviewsRequest as $review) {
             $reviewAuthor = DB::select("SELECT name FROM users WHERE id = $review->userid")[0];
-            
+            $isReviewAuthor = $review->userid == Auth::user()->id;
+
             $reviews[] = [
                 'description' => $review->description,
                 'author' => $reviewAuthor->name,
                 'likes' => $review->likes,
+                'isReviewAuthor' => $isReviewAuthor,
             ];
+
+            if ($isReviewAuthor) {
+                $userHasReview = true;
+            }
         }
 
-        return view('gamepage', ['name' => $game->name, 'summary' => $game->summary, 'coverUrl' => $url, 'genres' => $genreNames, 'publishers' => $publishers, 'developers' => $developers, 'launchDate' => $launchDate, 'reviews' => $reviews]);
+        usort($reviews, function ($a, $b) {
+            return $b['isReviewAuthor'] <=> $a['isReviewAuthor'];
+        });
+
+        return view('gamepage', ['id' => $id, 'name' => $game->name, 'summary' => $game->summary, 'coverUrl' => $url, 'genres' => $genreNames, 'publishers' => $publishers, 'developers' => $developers, 'launchDate' => $launchDate, 'reviews' => $reviews, 'userHasReview' => $userHasReview]);
     }
 
     public function onSearchGameList(Request $request) {
@@ -97,5 +114,23 @@ class GamePage extends Controller
         }
 
         return redirect()->route('dashboard')->with('games', $games);
+    }
+
+    public function onSendReview(Request $request) {
+        $review = $request->input('review');
+        $id = $request->input('gameId');
+
+        if (!$review || trim($review) === '') {
+            return response()->json(['error' => 'O review não pode estar vazio.'], 400);
+        }
+
+        $newReview = DB::table('reviews')->insert([
+            'description' => $review,
+            'userid' => Auth::user()->id,
+            'gameid' => $id,
+            'likes' => 0,
+        ]);
+
+        return response()->json(['success' => 'Review enviado com sucesso!', 'id' => $id], 200);
     }
 }

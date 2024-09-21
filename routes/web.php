@@ -29,5 +29,6 @@ Route::get('/registeruser', [GamingRegister::class, 'viewReg'])->name('gotoRegis
 Route::get('/game/{id}', [GamePage::class, 'viewGamePage'])->name('viewGamePage');
 
 Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearch');
+Route::post('/sendReview', [GamePage::class, 'onSendReview'])->name('sendReview');
 
 require __DIR__.'/auth.php';
