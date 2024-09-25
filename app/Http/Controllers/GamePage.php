@@ -104,18 +104,20 @@ class GamePage extends Controller
 
         $gameStats = DB::table('scores')->where('gameid', $id)->selectRaw('COUNT(*) as total_scores, AVG(score) as average_score')->first();
 
-        //$ranking = DB::table('scores')->selectRaw('gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank')->groupBy('gameid')->having('gameid', '=', $id)->first();
-        $ranking = DB::table(DB::raw('(SELECT gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank 
-                               FROM scores 
-                               GROUP BY gameid) as ranked_scores'))
-              ->where('gameid', '=', $id)
-              ->first();
+        $ranking = DB::table(DB::raw('(SELECT gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank FROM scores GROUP BY gameid) as ranked_scores'))->where('gameid', '=', $id)->first();
         $rank = null;
         if ($ranking) {
             $rank = $ranking->rank;
         }
 
-        $popularity = DB::table('scores')->selectRaw('gameid, AVG(score) as average_score, RANK() OVER (ORDER BY AVG(score) DESC) as rank')->groupBy('gameid')->having('gameid', '=', $id)->first();
+        $popularityRankQuery = DB::table('scores')
+            ->selectRaw('gameid, COUNT(*) as total_reviews')
+            ->groupBy('gameid')
+            ->havingRaw('COUNT(*) > 0')
+            ->orderByDesc('total_reviews')
+            ->get();
+
+        $popularity = $popularityRankQuery->pluck('gameid')->search($id);
 
         return view('gamepage', ['id' => $id, 
             'name' => $game->name, 
@@ -131,6 +133,7 @@ class GamePage extends Controller
             'averageRating' => round($gameStats->average_score, 2),
             'ratingCount' => $gameStats->total_scores,
             'ranking' => $rank,
+            'popularity' => $popularity !== false ? $popularity + 1 : 'N/A',
         ]);
     }
 

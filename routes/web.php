@@ -4,7 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GamingRegister;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MysqlTestController;
-use App\Http\Controllers\GamePage;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +27,7 @@ Route::get('/getgames', [MysqlTestController::class, 'apiTest'])->name('gamesTes
 Route::get('/registeruser', [GamingRegister::class, 'viewReg'])->name('gotoRegister');
 
 Route::get('/game/{id}', [GamePage::class, 'viewGamePage'])->name('viewGamePage');
+Route::get('/profile/{id}', [UserProfileController::class, 'viewProfile'])->name('viewProfile');
 
 Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearch');
 Route::post('/sendReview', [GamePage::class, 'onSendReview'])->name('sendReview');

@@ -71,6 +71,7 @@
                                         <p class="text-xs font-extrabold">Usuários: {{ $ratingCount }}</p>
                                         <br>
                                         <p class="text-lg text-gray-500 dark:text-gray-300 mb-4">Ranking: #{{ $ranking !== null ? $ranking : 'N/A' }}</p>
+                                        <p class="text-lg text-gray-500 dark:text-gray-300 mb-4">Popularidade: #{{ $popularity !== null ? $popularity : 'N/A' }}</p>
                                     </div>
                                 </div>
 
