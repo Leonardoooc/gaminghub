@@ -119,7 +119,8 @@ class GamePage extends Controller
 
         $popularity = $popularityRankQuery->pluck('gameid')->search($id);
 
-        return view('gamepage', ['id' => $id, 
+        return view('gamepage', [
+            'id' => $id, 
             'name' => $game->name, 
             'summary' => $game->summary, 
             'coverUrl' => $url, 

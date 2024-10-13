@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
-class ProfileController extends Controller
+class AccountController extends Controller
 {
 
     // edit profile
@@ -31,7 +31,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('account.edit')->with('status', 'profile-updated');
     }
 
    // deletar conta nao funciona a arrumar

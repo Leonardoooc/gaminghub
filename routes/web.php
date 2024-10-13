@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GamingRegister;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MysqlTestController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\GamePage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,9 +17,9 @@ Route::get('/', function () {
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::patch('/account', [AccountController::class, 'update'])->name('account.update');
+    Route::delete('/account', [AccountController::class, 'destroy'])->name('account.destroy');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'viewDashboard'])->name('dashboard');
