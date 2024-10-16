@@ -188,12 +188,13 @@ class GamePage extends Controller
 
         $currentRating = DB::select("SELECT * FROM scores WHERE userid = $userId and gameid = $id");
         if ($currentRating) {
-            DB::table('scores')->where('userid', $userId)->where('gameid', $id)->update(['score' => $rating]);
+            DB::table('scores')->where('userid', $userId)->where('gameid', $id)->update(['score' => $rating, 'updated' => now()]);
         } else {
             DB::table('scores')->insert([
                 'userid' => $userId,
                 'gameid' => $id,
                 'score' => $rating,
+                'created' => now(),
             ]);
         }
 
