@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MysqlTestController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\GamePage;
+use App\Http\Controllers\NavigationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,5 +34,7 @@ Route::get('/profile/{id}', [UserProfileController::class, 'viewProfile'])->name
 Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearch');
 Route::post('/sendReview', [GamePage::class, 'onSendReview'])->name('sendReview');
 Route::post('/sendRating', [GamePage::class, 'onSendRating'])->name('sendRating');
+
+Route::get('/search-games', [NavigationController::class, 'getGames']);
 
 require __DIR__.'/auth.php';
