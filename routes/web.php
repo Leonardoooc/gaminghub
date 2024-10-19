@@ -35,6 +35,7 @@ Route::post('/findgame', [GamePage::class, 'onSearchGameList'])->name('gameSearc
 Route::post('/sendReview', [GamePage::class, 'onSendReview'])->name('sendReview');
 Route::post('/sendRating', [GamePage::class, 'onSendRating'])->name('sendRating');
 
-Route::get('/search-games', [NavigationController::class, 'getGames']);
+Route::get('/search-games', [NavigationController::class, 'getGamesNav']);
+Route::get('/search', [NavigationController::class, 'searchPage'])->name('search');;
 
 require __DIR__.'/auth.php';

@@ -15,7 +15,8 @@
                     <input 
                         type="text" 
                         x-model="search" 
-                        @input.debounce="searchGames()" 
+                        @keydown.enter.prevent="goToSearch()"
+                        @input.debounce="searchGames()"
                         placeholder="Pesquisar jogos..." 
                         class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm w-64">
                     
@@ -26,7 +27,7 @@
                                 <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <a :href="'/game/' + game.id" class="block text-gray-900 dark:text-gray-100">
                                         <div class="flex items-center">
-                                            <img :src="game.coverUrl" alt="Capa do jogo" class="w-8 h-8 me-2">
+                                            <img :src="game.coverUrl ? game.coverUrl : '{{ asset('assets/noimg.jpg') }}'" style="width: 50px; height: 75px; object-fit: cover;" class="mr-4">
                                             <span x-text="game.name"></span>
                                         </div>
                                     </a>
@@ -60,7 +61,7 @@
                         <x-dropdown-link :href="route('account.edit')">
                             {{ __('Configurações') }}
                         </x-dropdown-link>
-                       
+                        
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -78,7 +79,6 @@
     </div>
 </nav>
 
-
 <script>
     function navigation() {
         return {
@@ -95,6 +95,11 @@
                     .then(data => {
                         this.results = data;
                 });
+            },
+            goToSearch() {
+                if (this.search.trim() !== '') {
+                    window.location.href = '/search?q=' + encodeURIComponent(this.search);
+                }
             }
         }
     }
