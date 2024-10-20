@@ -7,6 +7,7 @@ use App\Http\Controllers\MysqlTestController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\GamePage;
 use App\Http\Controllers\NavigationController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,7 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account', [AccountController::class, 'destroy'])->name('account.destroy');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'viewDashboard'])->name('dashboard');
+Route::get('/home', [HomeController::class, 'viewHome'])->name('home');
+Route::get('/', [HomeController::class, 'viewHome'])->name('home');
 Route::get('/getgames', [MysqlTestController::class, 'apiTest'])->name('gamesTest');
 
 Route::get('/registeruser', [GamingRegister::class, 'viewReg'])->name('gotoRegister');

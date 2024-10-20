@@ -143,7 +143,7 @@ class GamePage extends Controller
 
         $games = [];
         if (!$name || trim($name) === '') {
-            return redirect()->route('dashboard')->with('games', $games);
+            return redirect()->route('home')->with('games', $games);
         }
 
         $gamesFind = Game::search($name)->select(['id', 'name', 'cover'])->with(['cover'])->get();
@@ -156,7 +156,7 @@ class GamePage extends Controller
             ];
         }
 
-        return redirect()->route('dashboard')->with('games', $games);
+        return redirect()->route('home')->with('games', $games);
     }
 
     public function onSendReview(Request $request) {

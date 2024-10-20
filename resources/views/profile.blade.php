@@ -18,18 +18,18 @@
                 <div class="flex space-x-8">
                     <button 
                         @click="tab = 'social'"
-                        :class="tab === 'social' ? 'text-blue-600 dark:text-blue-400 relative' : 'text-gray-500 dark:text-gray-300'"
-                        class="text-lg font-semibold pb-2">
+                        :class="tab === 'social' ? 'text-blue-600 dark:text-blue-400 border-b-2' : 'text-gray-500 dark:text-gray-300 border-b-2 border-transparent'"
+                        :style="tab === 'social' ? 'border-color: white !important;' : ''"
+                        class="text-lg font-semibold pb-2 focus:outline-none">
                         Social
-                        <span :class="tab === 'social' ? 'block w-full h-1 bg-blue-600 dark:bg-blue-400 absolute left-0 bottom-0' : ''"></span>
                     </button>
 
                     <button 
                         @click="tab = 'games'"
-                        :class="tab === 'games' ? 'text-blue-600 dark:text-blue-400 relative' : 'text-gray-500 dark:text-gray-300'"
-                        class="text-lg font-semibold pb-2">
+                        :class="tab === 'games' ? 'text-blue-600 dark:text-blue-400 border-b-2' : 'text-gray-500 dark:text-gray-300 border-b-2 border-transparent'"
+                        :style="tab === 'games' ? 'border-color: white !important;' : ''"
+                        class="text-lg font-semibold pb-2 focus:outline-none">
                         Jogos
-                        <span :class="tab === 'games' ? 'block w-full h-1 bg-blue-600 dark:bg-blue-400 absolute left-0 bottom-0' : ''"></span>
                     </button>
                 </div>
             </div>

@@ -26,16 +26,16 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-3">
+        <div class="flex flex-col items-center justify-center mt-4 space-y-1">
+            <x-primary-button class="w-full justify-center">
                 {{ __('Entrar') }}
             </x-primary-button>
-        </div>
-    </form>
 
-    <form method="GET" action="{{ route('gotoRegister') }}">
-        <x-primary-button class="ms-3">
-            {{ __('Registrar') }}
-        </x-primary-button>
+            <a href="{{ route('gotoRegister') }}" class="w-full mt-1">
+                <x-primary-button class="w-full content-center justify-center">
+                    {{ __('Registrar') }}
+                </x-primary-button>
+            </a>
+        </div>
     </form>
 </x-guest-layout>

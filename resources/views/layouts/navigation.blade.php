@@ -1,40 +1,40 @@
 <nav x-data="navigation()" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('home') }}">
                         <img src="{{ asset('assets/logo.png') }}" width="50px" height="50px"/>
                     </a>
                 </div>
+            </div>
 
-                <!-- Game Search Bar -->
-                <div class="relative ms-4">
-                    <input 
-                        type="text" 
-                        x-model="search" 
-                        @keydown.enter.prevent="goToSearch()"
-                        @input.debounce="searchGames()"
-                        placeholder="Pesquisar jogos..." 
-                        class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm w-64">
-                    
-                    <!-- Dropdown de resultados de pesquisa -->
-                    <div x-show="search !== '' && results.length > 0" class="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
-                        <ul>
-                            <template x-for="game in results" :key="game.id">
-                                <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <a :href="'/game/' + game.id" class="block text-gray-900 dark:text-gray-100">
-                                        <div class="flex items-center">
-                                            <img :src="game.coverUrl ? game.coverUrl : '{{ asset('assets/noimg.jpg') }}'" style="width: 50px; height: 75px; object-fit: cover;" class="mr-4">
-                                            <span x-text="game.name"></span>
-                                        </div>
-                                    </a>
-                                </li>
-                            </template>
-                        </ul>
-                    </div>
+            <!-- Game Search Bar -->
+            <div class="relative ms-4" style="width: 40%;">
+                <input 
+                    type="text" 
+                    x-model="search" 
+                    @keydown.enter.prevent="goToSearch()"
+                    @input.debounce="searchGames()"
+                    placeholder="Pesquisar jogos..." 
+                    class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm w-full">
+                
+                <!-- Dropdown de resultados de pesquisa -->
+                <div x-show="search !== '' && results.length > 0" class="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+                    <ul>
+                        <template x-for="game in results" :key="game.id">
+                            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <a :href="'/game/' + game.id" class="block text-gray-900 dark:text-gray-100">
+                                    <div class="flex items-center">
+                                        <img :src="game.coverUrl ? game.coverUrl : '{{ asset('assets/noimg.jpg') }}'" style="width: 50px; height: 75px; object-fit: cover;" class="mr-1">
+                                        <span class="ml-1" x-text="game.name"></span>
+                                    </div>
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
                 </div>
             </div>
 

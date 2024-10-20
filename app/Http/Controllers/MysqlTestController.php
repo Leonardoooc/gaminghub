@@ -14,6 +14,6 @@ class MysqlTestController extends Controller
     public function apiTest(Request $request) {
         $games = Game::select(['*'])->with(['cover'])->get();
         
-        return view('dashboard', ['games' => $games]);
+        return view('home', ['games' => $games]);
     }
 }
