@@ -48,18 +48,24 @@
                                         10 => 'Obra Prima',
                                     ];
                                 @endphp
+                                
+                                @auth
+                                    <div class="flex items-center mb-4">
+                                        <p class="text-lg text-gray-500 dark:text-gray-300">Sua nota:</p>
+                                        <select id="ratingDropdown" class="ml-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-48">
+                                            <option value="" disabled {{ $currentRating == null ? 'selected' : '' }}>Escolha uma nota</option>
+                                            @foreach($ratings as $ratingValue => $ratingDescription)
+                                                <option value="{{ $ratingValue }}" {{ $currentRating == $ratingValue ? 'selected' : '' }}>
+                                                    {{ $ratingValue }} ({{ $ratingDescription }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endauth
 
-                                <div class="flex items-center mb-4">
-                                    <p class="text-lg text-gray-500 dark:text-gray-300">Sua nota:</p>
-                                    <select id="ratingDropdown" class="ml-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-48">
-                                        <option value="" disabled {{ $currentRating == null ? 'selected' : '' }}>Escolha uma nota</option>
-                                        @foreach($ratings as $ratingValue => $ratingDescription)
-                                            <option value="{{ $ratingValue }}" {{ $currentRating == $ratingValue ? 'selected' : '' }}>
-                                                {{ $ratingValue }} ({{ $ratingDescription }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                @guest
+                                    <p class="text-lg text-gray-500 dark:text-gray-300 mb-4">Faça login para avaliar este jogo.</p>
+                                @endguest
 
                                 <p id="ratingMessage" class="text-red-500 mt-2 text-sm" style="display:none;"></p>
 
@@ -130,25 +136,27 @@
 
             @isset($name)
                 @if(!$userHasReview)
-                    <div class="mt-8 space-y-12">
-                        <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-6 mb-8">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Escreva seu review</h3>
-                            <form id="reviewForm">
-                                @csrf
-                                <input type="hidden" name="game_id" id="game_id" value="{{ $id }}">
-                                <div class="mb-4">
-                                    <textarea name="review" id="review" rows="4" class="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" placeholder="Escreva seu review aqui..."></textarea>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <button type="button" id="submitReview" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg shadow-md">
-                                        Enviar Review
-                                    </button>
-                                </div>
-                            </form>
+                    @auth
+                        <div class="mt-8 space-y-12">
+                            <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-6 mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Escreva seu review</h3>
+                                <form id="reviewForm">
+                                    @csrf
+                                    <input type="hidden" name="game_id" id="game_id" value="{{ $id }}">
+                                    <div class="mb-4">
+                                        <textarea name="review" id="review" rows="4" class="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" placeholder="Escreva seu review aqui..."></textarea>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <button type="button" id="submitReview" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg shadow-md">
+                                            Enviar Review
+                                        </button>
+                                    </div>
+                                </form>
 
-                            <p id="message" class="text-red-500 mt-2" style="display:none;"></p>
+                                <p id="message" class="text-red-500 mt-2" style="display:none;"></p>
+                            </div>
                         </div>
-                    </div>
+                    @endauth
                 @endif
             @endisset
 

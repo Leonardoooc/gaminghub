@@ -75,9 +75,23 @@ class GamePage extends Controller
 
         $reviews = [];
         $userHasReview = false;
+
+        $currentRating = null;
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            $hasRating = DB::select("SELECT * FROM scores WHERE userid = $userId and gameid = $id");
+            if ($hasRating) {
+                $currentRating = $hasRating[0]->score;
+            }
+        }
+
         foreach ($reviewsRequest as $review) {
             $reviewAuthor = DB::select("SELECT name FROM users WHERE id = $review->userid")[0];
-            $isReviewAuthor = $review->userid == Auth::user()->id;
+
+            $isReviewAuthor = false;
+            if (Auth::check()) {
+                $isReviewAuthor = $review->userid == Auth::user()->id;
+            }
 
             $reviews[] = [
                 'description' => $review->description,
@@ -94,13 +108,6 @@ class GamePage extends Controller
         usort($reviews, function ($a, $b) {
             return $b['isReviewAuthor'] <=> $a['isReviewAuthor'];
         });
-
-        $userId = Auth::user()->id;
-        $hasRating = DB::select("SELECT * FROM scores WHERE userid = $userId and gameid = $id");
-        $currentRating = null;
-        if ($hasRating) {
-            $currentRating = $hasRating[0]->score;
-        }
 
         $gameStats = DB::table('scores')->where('gameid', $id)->selectRaw('COUNT(*) as total_scores, AVG(score) as average_score')->first();
 
@@ -160,6 +167,10 @@ class GamePage extends Controller
     }
 
     public function onSendReview(Request $request) {
+        if (!Auth::check()) {
+            return;
+        }
+
         $review = $request->input('review');
         $id = $request->input('gameId');
 
@@ -178,6 +189,10 @@ class GamePage extends Controller
     }
 
     public function onSendRating(Request $request) {
+        if (!Auth::check()) {
+            return;
+        }
+        
         $rating = $request->input('rating');
         $id = $request->input('gameId');
         $userId = Auth::user()->id;
